@@ -1,0 +1,9 @@
+build/*
+
+*.swp
+
+temp
+
+.lvimrc
+
+*.ppm
