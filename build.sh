@@ -13,6 +13,6 @@ rm ./temp/*
 rm ./out.mp4
 $BUILD_PATH/main
 # open temp/out_001.ppm
-# ffmpeg -i ./temp/out_%03d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -c:a copy out.mp4
+ffmpeg -i ./temp/out_%03d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -c:a copy out.mp4
 
 exit 0

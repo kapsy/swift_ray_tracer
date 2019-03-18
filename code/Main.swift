@@ -502,8 +502,8 @@ func main() {
     let sphere9 = Sphere(center: V3(0.5, 0.3, -0.9), rad: 0.10, material: sphere9Mat)
     globalSpheres.append(sphere9)
 
-    //let frameRate = Float(25)
-    let frameRate = Float(1)
+    let frameRate = Float(25)
+    //let frameRate = Float(1)
     let durationS = Float(12)
     let frameCount = frameRate*durationS
 
