@@ -7,10 +7,99 @@ enum TextureType {
     case perlin
 }
 
+var PERLIN_N:Int = (1 << 8)
+
+func permuteAxis(_ axis: inout [Int], _ i: Int) {
+    let tar = Int(drand48f()*Float(i + 1))
+    let tmp = axis[i]
+    axis[i] = axis[tar]
+    axis[tar] = tmp
+}
+
+class Perlin {
+    var permX: [Int]
+    var permY: [Int]
+    var permZ: [Int]
+
+    var randFloat: [Float]
+
+    init() {
+        let N = PERLIN_N
+
+        self.permX = [Int](repeating: 0, count: PERLIN_N)
+        self.permY = [Int](repeating: 0, count: PERLIN_N)
+        self.permZ = [Int](repeating: 0, count: PERLIN_N)
+
+        self.randFloat = [Float](repeating: 0.0, count: PERLIN_N)
+
+        for i in 0..<N {
+            self.randFloat[i] = drand48f()
+            self.permX[i] = i
+            self.permY[i] = i
+            self.permZ[i] = i
+        }
+
+        for i in (0..<N).reversed() {
+            permuteAxis(&self.permX, i)
+            permuteAxis(&self.permY, i)
+            permuteAxis(&self.permZ, i)
+        }
+    }
+}
+
+func getNoise(_ per: Perlin, _ p0: V3) -> Float {
+
+    let p1 = p0*20.0
+
+    let u = Float(p1.x - floor(p1.x))
+    let v = Float(p1.y - floor(p1.y))
+    let w = Float(p1.z - floor(p1.z))
+
+    let i = Int(floor(p1.x))
+    let j = Int(floor(p1.y))
+    let k = Int(floor(p1.z))
+
+    // Crazy Swift multi dimensional array syntax.
+    var c:[[[Float]]] = Array(repeating:
+                        Array(repeating:
+                        Array(repeating: 0.0,
+                            count: 2),
+                            count: 2),
+                            count: 2)
+
+    for di in 0..<2 {
+    for dj in 0..<2 {
+    for dk in 0..<2 {
+        c[di][dj][dk] =
+            per.randFloat[per.permX[(i+di) & (PERLIN_N - 1)] ^
+                          per.permY[(j+dj) & (PERLIN_N - 1)] ^
+                          per.permZ[(k+dk) & (PERLIN_N - 1)]]
+    }}}
+
+    var accum = Float(0.0)
+
+    for i in 0..<2 {
+    for j in 0..<2 {
+    for k in 0..<2 {
+
+        let I = (Float(i)*u + (1.0 - Float(i))*(1.0 - u))
+        let J = (Float(j)*v + (1.0 - Float(j))*(1.0 - v))
+        let K = (Float(k)*w + (1.0 - Float(k))*(1.0 - w))
+
+        accum += I*J*K*Float(c[i][j][k])
+    }}}
+
+    assert(accum <= 1.0)
+
+    return accum
+}
+
+
 class Texture {
 
     var type: TextureType = .plain
     var albedo = V3(0)
+    var perlin: Perlin?
 
 }
 
@@ -52,8 +141,9 @@ func getAlbedo(_ texture: Texture, _ u: Float, _ v: Float, _ p: V3) -> V3 {
             res = texture.albedo
 
         case .perlin:
-            break
-            //res = V3(1.0)*GetNoise(tex->perlin, p);
+            if let perlin = texture.perlin {
+                res = V3(1.0)*getNoise(perlin, p)
+            }
     }
 
     return res
@@ -347,9 +437,12 @@ func main() {
 
     let perlinTexture = Texture()
     perlinTexture.albedo = V3(1,1,0)
+    perlinTexture.perlin = Perlin()
+    perlinTexture.type = .perlin
     let sphere0Mat = Material(type: .lambertian, texture: perlinTexture)
     let sphere0 = Sphere(center: V3(0, 0.3, 0), rad: 0.3, material: sphere0Mat)
     globalSpheres.append(sphere0)
+
 
     let glassTexture = Texture()
     glassTexture.albedo = V3(1)
