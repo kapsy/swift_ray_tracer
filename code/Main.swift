@@ -253,19 +253,6 @@ func main() {
 
     // MARK: Init spheres
 
-    //// var s0 = sphereCount
-    //// spheres[s0].center = V3(0, -99.99, 0)
-    //// spheres[s0].rad = 100.f
-    //// spheres[s0].mat = Mat(type: MatLambertian, t3)
-    //// sphereCount += 1
-
-    //// var s3 = sphereCount
-    //// spheres[s3].center = V3(0, 0, -1)
-    //// spheres[s3].rad = 0.5
-    //// sphereCount += 1
-
-    //let perlinTexture = PerlinTexture()
-
     let perlinTexture = Texture()
     perlinTexture.albedo = V3(1,1,0)
     let sphere0Mat = Material(type: .lambertian, texture: perlinTexture)
@@ -286,17 +273,6 @@ func main() {
     let sphere3 = Sphere(center: V3(0, -99.99, 0), rad: 100.0, material: sphere3Mat)
     globalSpheres.append(sphere3)
 
-    //// sphere *s3 = &spheres[spherecount++];
-    //// s3->center = V3 (0.6f, 0.8f, -0.3f);
-    //// s3->rad = 0.2f;
-    //// s3->mat = (mat_t) { MAT_METAL, t3 };
-
-    //// sphere *s4 = &spheres[spherecount++];
-    //// s4->center = V3 (0.7f, 0.32f, -0.4f);
-    //// s4->rad = 0.23f;
-    //// s4->mat = (mat_t) { MAT_DIELECTRIC, t3 };
-    //// s4->mat.refindex = 1.1f;
-
     //let frameRate = Float(25)
     let frameRate = Float(1)
     let durationS = Float(12)
@@ -309,7 +285,7 @@ func main() {
 
     let nx = Int(200)
     let ny = Int(100)
-    let ns = Int(100)
+    let ns = Int(5)
 
     var lookFrom = V3(0.001,0.39,-1.0)
     let lookAt = V3(0.0, 0.3, 0.0)
