@@ -12,7 +12,17 @@ For each pixel, `ns` rays are stochastically fired into a simple scene.
 
 The final pixel color is just the average color of each ray, which is calculated using the material properties of whatever sphere the ray happens to intersect with.
 
-To make things interesting, a simple looping camera animation was adding using the Rodriguez rotation. Single frames are output as `ppm` files, and converted to an `mp4` using ffmpeg after the program has run.
+To make things interesting, a simple looping camera animation was adding using Rodrigues rotation. Single frames are output as `ppm` files, and converted to an `mp4` using ffmpeg after the program has run.
+
+# Algorithms
+
+- Line sphere intersection
+- Path tracing
+- Lamberian scattering
+- Fresnel equations
+- Schlick approximation
+- Perlin noise
+- Rodrigues rotation formula
 
 # Requirements
 

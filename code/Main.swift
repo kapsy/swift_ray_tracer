@@ -81,7 +81,6 @@ func getNoise(_ per: Perlin, _ p0: V3) -> Float {
     for i in 0..<2 {
     for j in 0..<2 {
     for k in 0..<2 {
-
         let I = (Float(i)*u + (1.0 - Float(i))*(1.0 - u))
         let J = (Float(j)*v + (1.0 - Float(j))*(1.0 - v))
         let K = (Float(k)*w + (1.0 - Float(k))*(1.0 - w))
@@ -514,6 +513,9 @@ func main() {
 
     let nx = Int(600)
     let ny = Int(300)
+
+    let nx = Int(600)
+    let ny = Int(360)
 
     //// let nx = Int(200)
     //// let ny = Int(100)
