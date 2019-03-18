@@ -1,11 +1,6 @@
 import Foundation
 
-enum TextureType {
-
-    case plain
-    case checker
-    case perlin
-}
+// MARK: Perlin Noise
 
 var PERLIN_N:Int = (1 << 8)
 
@@ -16,6 +11,7 @@ func permuteAxis(_ axis: inout [Int], _ i: Int) {
     axis[tar] = tmp
 }
 
+// NOTE: (Kapsy) This is an incomplete implementation!
 class Perlin {
     var permX: [Int]
     var permY: [Int]
@@ -93,14 +89,23 @@ func getNoise(_ per: Perlin, _ p0: V3) -> Float {
     return accum
 }
 
+// MARK: Texture
+
+enum TextureType {
+
+    case plain
+    case checker
+    case perlin
+}
 
 class Texture {
 
     var type: TextureType = .plain
     var albedo = V3(0)
     var perlin: Perlin?
-
 }
+
+// MARK: Material
 
 enum MaterialType {
 
@@ -160,6 +165,8 @@ func reflect(_ v: V3, _ N: V3) -> V3 {
     return (v - 2*dot(v, N)*N)
 }
 
+// MARK: Sphere
+
 class Sphere
 {
     var center: V3
@@ -171,7 +178,6 @@ class Sphere
         self.rad = rad
         self.material = material
     }
-
 }
 
 var globalSpheres: [Sphere] = []
@@ -331,13 +337,14 @@ func getColorForRay(_ ray: inout Ray, _ depth: Int) -> V3 {
             switch _mat.type {
 
             case .lambertian:
+
                 let rand = randomInUnitSphere()
                 let target = p + N + rand
-                let attenuation = getAlbedo(_mat.texture, 0, 0, p)
+                let albedo = getAlbedo(_mat.texture, 0, 0, p)
                 var scattered = Ray(p, target - p)
 
                 if depth < MAX_DEPTH {
-                    res = attenuation*getColorForRay(&scattered, depth+1)
+                    res = albedo*getColorForRay(&scattered, depth+1)
                 } else {
                     res = V3(0)
                 }
@@ -392,6 +399,7 @@ func getColorForRay(_ ray: inout Ray, _ depth: Int) -> V3 {
                     let dt = dot(uv, outwardNormal)
                     let discriminant = 1.0 - niOverNt*niOverNt*(1.0 - dt*dt)
 
+                    // NOTE: (Kapsy) Approximate reflection/refraction probability.
                     if discriminant > 0.0 {
                         refracted = niOverNt*(uv - outwardNormal*dt) - outwardNormal*sqrt(discriminant)
                         reflectProb = schlick(cos, _mat.refIndex)
@@ -500,24 +508,27 @@ func main() {
     let sphere9 = Sphere(center: V3(0.5, 0.3, -0.9), rad: 0.10, material: sphere9Mat)
     globalSpheres.append(sphere9)
 
-    let frameRate = Float(0.6)
-    //let frameRate = Float(25)
-    let durationS = Float(12)
-    let frameCount = frameRate*durationS
+    let frameRate = Float(25)
+    // NOTE: (Kapsy) Uncomment for animation preview renders.
+    //let frameRate = Float(0.5)
 
+    let durationSeconds = Float(12)
+    let frameCount = frameRate*durationSeconds
+
+    // NOTE: (Kapsy) Camera rotation step
     let omega = (2*Float.pi)/frameCount
     let k = V3 (0,1,0)
-
     var ellipsephase = Float(0)
 
+    // NOTE: (Kapsy) Image plane dimensions
     let nx = Int(600)
-    let ny = Int(360)
+    let ny = Int(300)
 
     //// let nx = Int(200)
     //// let ny = Int(100)
 
-    //let ns = Int(30)
-    let ns = Int(10)
+    // NOTE: (Kapsy) Primary rays per pixel
+    let ns = Int(30)
 
     var lookFrom = V3(0.001,0.39,-1.0)
     let lookAt = V3(0.0, 0.3, 0.0)
@@ -536,13 +547,10 @@ func main() {
         var lookFromRes = lookFrom
         lookFromRes = lookFromRes*((-cos(ellipsephase) + 1.0)*0.07 + 1.3);
 
-        // let T = M44Trans(0.f, 0.4, 0.0);
-        // lookFromRes = lookFromRes*T
-
         let vup = V3(0.18, 1, 0)
         let vfov = Float(60)
         let aspect = Float(nx)/Float(ny)
-        let aperture = Float(0.09)//Float(0) // (0.04)
+        let aperture = Float(0.09)
         let focusDist = length(lookFromRes - lookAt)
 
         cam.lensRad = aperture/2.0;
@@ -578,7 +586,6 @@ func main() {
                     assertNaN(col.r)
                     assertNaN(col.g)
                     assertNaN(col.b)
-
                 }
 
                 col /= Float(ns)
@@ -604,8 +611,7 @@ func main() {
 
         FileManager.default.createFile(atPath: outPath, contents: data)
 
-
-        // Rodrigues Rotation formula
+        // NOTE: (Kapsy) Rodrigues Rotation formula
         var v = lookFrom
         v = v*cos(omega) + cross(k, v)*sin(omega) + k*dot(k, v)*(1.0 - cos(omega))
         lookFrom = v

@@ -47,7 +47,6 @@ struct V3 {
     }
 }
 
-
 func +(a: V3, b: V3) -> V3 {
     let res = V3(a.x + b.x, a.y + b.y, a.z + b.z)
     return res
@@ -111,7 +110,6 @@ func cross(_ a: V3, _ b: V3) -> V3 {
     return res
 }
 
-
 func length(_ a: V3) -> Float {
     let res = sqrt(dot(a, a))
     return res
@@ -135,4 +133,3 @@ func randomInUnitSphere() -> V3 {
 
     return (v);
 }
-
