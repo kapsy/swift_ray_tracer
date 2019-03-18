@@ -224,7 +224,6 @@ struct Ray {
         self.A = V3(0)
         self.B = V3(0)
     }
-
 }
 
 func getRayTemp(_ c: inout Camera, _ s: Float, _ t: Float) -> Ray {
@@ -252,7 +251,6 @@ func pointAt(_ ray: inout Ray, _ t: Float) -> V3 {
     let res = ray.A + t*ray.B
     return res
 }
-
 
 func traverseSpheres(_ ray: inout Ray, _ hit: HitRecord) {
 
@@ -330,7 +328,9 @@ func getColorForRay(_ ray: inout Ray, _ depth: Int) -> V3 {
         }
 
         if let _mat = mat {
+
             switch _mat.type {
+
             case .lambertian:
                 let rand = randomInUnitSphere()
                 let target = p + N + rand
@@ -436,27 +436,25 @@ func main() {
     // MARK: Init spheres
 
     let perlinTexture = Texture()
-    perlinTexture.albedo = V3(1,1,0)
+    perlinTexture.albedo = V3(1,1,1)
     perlinTexture.perlin = Perlin()
     perlinTexture.type = .perlin
     let sphere0Mat = Material(type: .lambertian, texture: perlinTexture)
-    let sphere0 = Sphere(center: V3(0, 0.3, 0), rad: 0.3, material: sphere0Mat)
+    let sphere0 = Sphere(center: V3(0, 0.3, 0), rad: 0.33, material: sphere0Mat)
     globalSpheres.append(sphere0)
-
 
     let glassTexture = Texture()
     glassTexture.albedo = V3(1)
     let sphere1Mat = Material(type: .dielectric, texture: glassTexture)
-    let sphere1 = Sphere(center: V3(0.5, 0.3, -0.3), rad: -0.2, material: sphere1Mat)
+    let sphere1 = Sphere(center: V3(0.53, 0.3, -0.33), rad: -0.25, material: sphere1Mat)
     globalSpheres.append(sphere1)
 
     let whiteTexture = Texture()
     whiteTexture.albedo = V3(1)
     let sphere2Mat = Material(type: .metal, texture: whiteTexture)
     sphere2Mat.fuzz = 0.3
-    let sphere2 = Sphere(center: V3(-0.7, 0.3, 0), rad: 0.2, material: sphere2Mat)
+    let sphere2 = Sphere(center: V3(-0.7, 0.3, 0), rad: 0.24, material: sphere2Mat)
     globalSpheres.append(sphere2)
-
 
     let groundTexture = Texture()
     groundTexture.albedo = V3(0.2,0.5,0.3)
@@ -465,6 +463,45 @@ func main() {
     sphere3Mat.refIndex = 1.3
     let sphere3 = Sphere(center: V3(0, -99.99, 0), rad: 100.0, material: sphere3Mat)
     globalSpheres.append(sphere3)
+
+    let greenTexture = Texture()
+    greenTexture.albedo = V3(0,1.3,0)
+    let sphere4Mat = Material(type: .lambertian, texture: greenTexture)
+    let sphere4 = Sphere(center: V3(0.0, 0.3, 0.5), rad: 0.13, material: sphere4Mat)
+    globalSpheres.append(sphere4)
+
+    let redTexture = Texture()
+    redTexture.albedo = V3(2,0.3,0.3)
+    let sphere5Mat = Material(type: .lambertian, texture: redTexture)
+    let sphere5 = Sphere(center: V3(0.1, 0.3, -0.6), rad: 0.16, material: sphere5Mat)
+    globalSpheres.append(sphere5)
+
+    let purpleTexture = Texture()
+    purpleTexture.albedo = V3(1,0,1)
+    let sphere6Mat = Material(type: .metal, texture: purpleTexture)
+    sphere6Mat.fuzz = 0.4
+    let sphere6 = Sphere(center: V3(0.7, 0.3, 0.8), rad: 0.35, material: sphere6Mat)
+    globalSpheres.append(sphere6)
+
+    let blueTexture = Texture()
+    blueTexture.albedo = V3(0.2,0.2,3)
+    let sphere7Mat = Material(type: .lambertian, texture: blueTexture)
+    let sphere7 = Sphere(center: V3(-0.5, 0.3, -0.9), rad: 0.13, material: sphere7Mat)
+    globalSpheres.append(sphere7)
+
+
+    let purple2Texture = Texture()
+    purple2Texture.albedo = V3(1,1,1)
+    let sphere8Mat = Material(type: .dielectric, texture: purple2Texture)
+    let sphere8 = Sphere(center: V3(-0.6, 0.24, 0.6), rad: 0.18, material: sphere8Mat)
+    globalSpheres.append(sphere8)
+
+    let metalTexture = Texture()
+    metalTexture.albedo = V3(0,1,1)
+    let sphere9Mat = Material(type: .metal, texture: metalTexture)
+    sphere9Mat.fuzz = 0.3
+    let sphere9 = Sphere(center: V3(0.5, 0.3, -0.9), rad: 0.12, material: sphere9Mat)
+    globalSpheres.append(sphere9)
 
     //let frameRate = Float(25)
     let frameRate = Float(1)
@@ -476,11 +513,11 @@ func main() {
 
     var ellipsephase = Float(0)
 
-    let nx = Int(600)
-    let ny = Int(300)
+    //// let nx = Int(600)
+    //// let ny = Int(300)
 
-    //// let nx = Int(200)
-    //// let ny = Int(100)
+    let nx = Int(200)
+    let ny = Int(100)
     let ns = Int(30)
 
     var lookFrom = V3(0.001,0.39,-1.0)
