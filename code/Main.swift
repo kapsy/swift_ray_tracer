@@ -432,7 +432,6 @@ func getColorForRay(_ ray: inout Ray, _ depth: Int) -> V3 {
 
 func main() {
 
-
     // MARK: Init spheres
 
     let perlinTexture = Texture()
@@ -440,13 +439,13 @@ func main() {
     perlinTexture.perlin = Perlin()
     perlinTexture.type = .perlin
     let sphere0Mat = Material(type: .lambertian, texture: perlinTexture)
-    let sphere0 = Sphere(center: V3(0, 0.3, 0), rad: 0.33, material: sphere0Mat)
+    let sphere0 = Sphere(center: V3(0, 0.32, 0), rad: 0.34, material: sphere0Mat)
     globalSpheres.append(sphere0)
 
     let glassTexture = Texture()
     glassTexture.albedo = V3(1)
     let sphere1Mat = Material(type: .dielectric, texture: glassTexture)
-    let sphere1 = Sphere(center: V3(0.53, 0.3, -0.33), rad: -0.25, material: sphere1Mat)
+    let sphere1 = Sphere(center: V3(0.53, 0.3, -0.33), rad: -0.23, material: sphere1Mat)
     globalSpheres.append(sphere1)
 
     let whiteTexture = Texture()
@@ -500,7 +499,7 @@ func main() {
     metalTexture.albedo = V3(0,1,1)
     let sphere9Mat = Material(type: .metal, texture: metalTexture)
     sphere9Mat.fuzz = 0.3
-    let sphere9 = Sphere(center: V3(0.5, 0.3, -0.9), rad: 0.12, material: sphere9Mat)
+    let sphere9 = Sphere(center: V3(0.5, 0.3, -0.9), rad: 0.10, material: sphere9Mat)
     globalSpheres.append(sphere9)
 
     //let frameRate = Float(25)
@@ -513,11 +512,11 @@ func main() {
 
     var ellipsephase = Float(0)
 
-    //// let nx = Int(600)
-    //// let ny = Int(300)
+    let nx = Int(600)
+    let ny = Int(300)
 
-    let nx = Int(200)
-    let ny = Int(100)
+    //// let nx = Int(200)
+    //// let ny = Int(100)
     let ns = Int(30)
 
     var lookFrom = V3(0.001,0.39,-1.0)
