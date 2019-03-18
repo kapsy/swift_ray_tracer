@@ -448,9 +448,9 @@ func main() {
     globalSpheres.append(sphere1)
 
     let whiteTexture = Texture()
-    whiteTexture.albedo = V3(1)
+    whiteTexture.albedo = V3(0.95)
     let sphere2Mat = Material(type: .metal, texture: whiteTexture)
-    sphere2Mat.fuzz = 0.3
+    sphere2Mat.fuzz = 0.24
     let sphere2 = Sphere(center: V3(-0.7, 0.3, 0), rad: 0.24, material: sphere2Mat)
     globalSpheres.append(sphere2)
 
@@ -477,8 +477,8 @@ func main() {
     let purpleTexture = Texture()
     purpleTexture.albedo = V3(1,0,1)
     let sphere6Mat = Material(type: .metal, texture: purpleTexture)
-    sphere6Mat.fuzz = 0.4
-    let sphere6 = Sphere(center: V3(0.7, 0.3, 0.8), rad: 0.35, material: sphere6Mat)
+    sphere6Mat.fuzz = 0.2
+    let sphere6 = Sphere(center: V3(0.68, 0.33, 0.79), rad: 0.33, material: sphere6Mat)
     globalSpheres.append(sphere6)
 
     let blueTexture = Texture()
@@ -486,7 +486,6 @@ func main() {
     let sphere7Mat = Material(type: .lambertian, texture: blueTexture)
     let sphere7 = Sphere(center: V3(-0.5, 0.3, -0.9), rad: 0.13, material: sphere7Mat)
     globalSpheres.append(sphere7)
-
 
     let purple2Texture = Texture()
     purple2Texture.albedo = V3(1,1,1)
@@ -501,8 +500,8 @@ func main() {
     let sphere9 = Sphere(center: V3(0.5, 0.3, -0.9), rad: 0.10, material: sphere9Mat)
     globalSpheres.append(sphere9)
 
-    let frameRate = Float(25)
-    //let frameRate = Float(1)
+    let frameRate = Float(0.6)
+    //let frameRate = Float(25)
     let durationS = Float(12)
     let frameCount = frameRate*durationS
 
@@ -512,14 +511,13 @@ func main() {
     var ellipsephase = Float(0)
 
     let nx = Int(600)
-    let ny = Int(300)
-
-    let nx = Int(600)
     let ny = Int(360)
 
     //// let nx = Int(200)
     //// let ny = Int(100)
-    let ns = Int(30)
+
+    //let ns = Int(30)
+    let ns = Int(10)
 
     var lookFrom = V3(0.001,0.39,-1.0)
     let lookAt = V3(0.0, 0.3, 0.0)
