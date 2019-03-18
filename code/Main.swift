@@ -359,7 +359,7 @@ func getColorForRay(_ ray: inout Ray, _ depth: Int) -> V3 {
 
                 let albedo = getAlbedo(_mat.texture, 0, 0, p)
 
-                // NOTE: (Kapsy) Checking if < 90 deg.
+                // NOTE: (Kapsy) Direction between normal and reflection should never be more than 90 deg.
                 let result = (dot(scattered.dir, N) > 0.0)
                 if (depth < MAX_DEPTH && result) {
                     res = albedo*getColorForRay(&scattered, depth+1)
