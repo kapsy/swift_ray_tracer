@@ -456,7 +456,7 @@ func main() {
     globalSpheres.append(sphere1)
 
     let whiteTexture = Texture()
-    whiteTexture.albedo = V3(0.97)
+    whiteTexture.albedo = V3(1,0.97,0.97)
     let sphere2Mat = Material(type: .metal, texture: whiteTexture)
     sphere2Mat.fuzz = 0.24
     let sphere2 = Sphere(center: V3(-0.7, 0.3, 0), rad: 0.24, material: sphere2Mat)
