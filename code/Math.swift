@@ -94,6 +94,11 @@ func *(a: V3, b: Float) -> V3 {
     return res
 }
 
+prefix func -(a: V3) -> V3 {
+    let res = V3(-a.x, -a.y, -a.z)
+    return res
+}
+
 func dot(_ a: V3, _ b: V3) -> Float {
     let res = a.x*b.x + a.y*b.y + a.z*b.z
     return res

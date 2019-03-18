@@ -17,12 +17,16 @@ class Texture {
 enum MaterialType {
 
     case lambertian
+    case metal
+    case dielectric
 }
 
 class Material {
 
     var type: MaterialType
     var texture: Texture
+    var fuzz = Float(0) // For metal only, leaving in same class for now.
+    var refIndex = Float(1.1) // For dielectrics only, leaving here for now.
 
     init(type: MaterialType, texture: Texture) {
         self.type = type
@@ -53,6 +57,18 @@ func getAlbedo(_ texture: Texture, _ u: Float, _ v: Float, _ p: V3) -> V3 {
     }
 
     return res
+}
+
+func schlick(_ cos: Float, _ refIndex: Float) -> Float {
+    var r0 = (1.0 - refIndex)/(1.0 + refIndex);
+    r0 = r0*r0;
+    r0 = r0 + (1.0 - r0)*pow((1.0 - cos), 5.0);
+
+    return r0
+}
+
+func reflect(_ v: V3, _ N: V3) -> V3 {
+    return (v - 2*dot(v, N)*N)
 }
 
 class Sphere
@@ -113,6 +129,12 @@ struct Ray {
         self.A = A
         self.B = B
     }
+
+    init() {
+        self.A = V3(0)
+        self.B = V3(0)
+    }
+
 }
 
 func getRayTemp(_ c: inout Camera, _ s: Float, _ t: Float) -> Ray {
@@ -188,7 +210,7 @@ func getColorForRay(_ ray: inout Ray, _ depth: Int) -> V3 {
 
     var res = V3()
 
-    var hit = HitRecord()
+    let hit = HitRecord()
     hit.dist = Float.greatestFiniteMagnitude
 
     traverseSpheres(&ray, hit)
@@ -230,6 +252,76 @@ func getColorForRay(_ ray: inout Ray, _ depth: Int) -> V3 {
                 } else {
                     res = V3(0)
                 }
+
+            case .metal:
+
+                let v = unit(ray.dir)
+                let reflected = v - 2*dot(v, N)*N
+                let bias = N*1e-4
+
+                var scattered = Ray(p + bias, reflected + _mat.fuzz*randomInUnitSphere())
+
+                let albedo = getAlbedo(_mat.texture, 0, 0, p)
+
+                // NOTE: (Kapsy) Checking if < 90 deg.
+                let result = (dot(scattered.dir, N) > 0.0)
+                if (depth < MAX_DEPTH && result) {
+                    res = albedo*getColorForRay(&scattered, depth+1)
+                } else {
+                    res = V3(0.0)
+                }
+
+            case .dielectric:
+
+                    var scattered = Ray()
+
+                    var outwardNormal = V3(0)
+                    var niOverNt = Float(0)
+                    let reflected = reflect(ray.dir, N)
+
+                    var reflectProb = Float(0)
+                    var cos = Float(0)
+
+                    if dot(ray.dir, N) > 0.0 {
+                        outwardNormal = -N
+                        niOverNt = _mat.refIndex
+                        cos = _mat.refIndex*dot(ray.dir, N)/length(ray.dir)
+                    }
+                    else
+                    {
+                        outwardNormal = N
+                        niOverNt = 1.0/_mat.refIndex
+                        cos = -dot(ray.dir, N)/length(ray.dir)
+                    }
+
+                    var refracted = V3(0.0)
+
+                    let bias = outwardNormal*1e-2
+                    p = p - bias
+
+                    let uv = unit(ray.dir)
+                    let dt = dot(uv, outwardNormal)
+                    let discriminant = 1.0 - niOverNt*niOverNt*(1.0 - dt*dt)
+
+                    if discriminant > 0.0 {
+                        refracted = niOverNt*(uv - outwardNormal*dt) - outwardNormal*sqrt(discriminant)
+                        reflectProb = schlick(cos, _mat.refIndex)
+                    } else {
+                        scattered = Ray(p, reflected)
+                        reflectProb = 1.0
+                    }
+
+                    if drand48f() < reflectProb {
+                        scattered = Ray(p, reflected)
+                    } else {
+                        scattered = Ray(p, refracted)
+                    }
+
+                    if depth < MAX_DEPTH {
+                        res = getColorForRay(&scattered, depth+1)
+                    } else {
+                        res = V3 (0.0)
+                    }
             }
         }
 
@@ -259,17 +351,25 @@ func main() {
     let sphere0 = Sphere(center: V3(0, 0.3, 0), rad: 0.3, material: sphere0Mat)
     globalSpheres.append(sphere0)
 
-    let sphere1Mat = Material(type: .lambertian, texture: perlinTexture)
-    let sphere1 = Sphere(center: V3(0.5, 0.3, -0.3), rad: 0.2, material: sphere1Mat)
+    let glassTexture = Texture()
+    glassTexture.albedo = V3(1)
+    let sphere1Mat = Material(type: .dielectric, texture: glassTexture)
+    let sphere1 = Sphere(center: V3(0.5, 0.3, -0.3), rad: -0.2, material: sphere1Mat)
     globalSpheres.append(sphere1)
 
-    let sphere2Mat = Material(type: .lambertian, texture: perlinTexture)
+    let whiteTexture = Texture()
+    whiteTexture.albedo = V3(1)
+    let sphere2Mat = Material(type: .metal, texture: whiteTexture)
+    sphere2Mat.fuzz = 0.3
     let sphere2 = Sphere(center: V3(-0.7, 0.3, 0), rad: 0.2, material: sphere2Mat)
     globalSpheres.append(sphere2)
 
+
     let groundTexture = Texture()
     groundTexture.albedo = V3(0.2,0.5,0.3)
+    groundTexture.type = .checker
     let sphere3Mat = Material(type: .lambertian, texture: groundTexture)
+    sphere3Mat.refIndex = 1.3
     let sphere3 = Sphere(center: V3(0, -99.99, 0), rad: 100.0, material: sphere3Mat)
     globalSpheres.append(sphere3)
 
@@ -283,9 +383,12 @@ func main() {
 
     var ellipsephase = Float(0)
 
-    let nx = Int(200)
-    let ny = Int(100)
-    let ns = Int(5)
+    let nx = Int(600)
+    let ny = Int(300)
+
+    //// let nx = Int(200)
+    //// let ny = Int(100)
+    let ns = Int(30)
 
     var lookFrom = V3(0.001,0.39,-1.0)
     let lookAt = V3(0.0, 0.3, 0.0)
@@ -309,7 +412,7 @@ func main() {
         let vup = V3(0.18, 1, 0)
         let vfov = Float(60)
         let aspect = Float(nx)/Float(ny)
-        let aperture = Float(0) // (0.04)
+        let aperture = Float(0.09)//Float(0) // (0.04)
         let focusDist = length(lookFromRes - lookAt)
 
         cam.lensRad = aperture/2.0;
