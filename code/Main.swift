@@ -129,7 +129,7 @@ func getAlbedo(_ texture: Texture, _ u: Float, _ v: Float, _ p: V3) -> V3 {
     switch texture.type {
 
         case .checker:
-            let selector = Float(sin(10.0*p.x)*sin(10.0*p.y)*sin(10.0*p.z))
+            let selector = Float(sin(10.0*p.x)*sin(10.0*p.z))
             if selector > 0.0 {
                 res = V3(0,0,0)
             } else {
@@ -448,7 +448,7 @@ func main() {
     globalSpheres.append(sphere1)
 
     let whiteTexture = Texture()
-    whiteTexture.albedo = V3(0.95)
+    whiteTexture.albedo = V3(0.97)
     let sphere2Mat = Material(type: .metal, texture: whiteTexture)
     sphere2Mat.fuzz = 0.24
     let sphere2 = Sphere(center: V3(-0.7, 0.3, 0), rad: 0.24, material: sphere2Mat)
@@ -535,8 +535,9 @@ func main() {
 
         var lookFromRes = lookFrom
         lookFromRes = lookFromRes*((-cos(ellipsephase) + 1.0)*0.07 + 1.3);
-        //let T = M44Trans(0.f, 0.4, 0.0);
-        //lookFromRes = lookFromRes*T
+
+        // let T = M44Trans(0.f, 0.4, 0.0);
+        // lookFromRes = lookFromRes*T
 
         let vup = V3(0.18, 1, 0)
         let vfov = Float(60)
