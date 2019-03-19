@@ -1,6 +1,6 @@
 # About
 
-This program was made to accompany _Graphics like Pixar using Swift_, a lightning talk given at try! Swift Tokyo in 2019.
+This program was made to accompany _Graphics like Pixar using Swift_, a lightning talk given at _try! Swift Tokyo_ in 2019.
 
 This is a simple ray tracer, or more specifically, path tracer, built using Swift.
 
