@@ -512,7 +512,7 @@ func main() {
     // NOTE: (Kapsy) Uncomment for animation preview renders.
     //let frameRate = Float(0.5)
 
-    let durationSeconds = Float(12)
+    let durationSeconds = Float(4)
     let frameCount = frameRate*durationSeconds
 
     // NOTE: (Kapsy) Camera rotation step
