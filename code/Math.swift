@@ -6,6 +6,10 @@ func assertNaN(_ value: Float) {
     assert(!value.isNaN)
 }
 
+func filterNaN(_ value: Float) -> Float {
+    return value.isNaN ? 0.0 : value
+}
+
 func drand48f() -> Float {
     return Float(drand48())
 }

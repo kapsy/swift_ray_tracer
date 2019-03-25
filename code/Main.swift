@@ -512,7 +512,7 @@ func main() {
     // NOTE: (Kapsy) Uncomment for animation preview renders.
     //let frameRate = Float(0.5)
 
-    let durationSeconds = Float(4)
+    let durationSeconds = Float(8)
     let frameCount = frameRate*durationSeconds
 
     // NOTE: (Kapsy) Camera rotation step
@@ -582,11 +582,12 @@ func main() {
                     var r = getRay(&cam, u, v)
 
                     col += getColorForRay(&r, 0)
-
-                    assertNaN(col.r)
-                    assertNaN(col.g)
-                    assertNaN(col.b)
                 }
+
+                // NOTE: (Kapsy) Filter NaNs. Probably caused by drand48f() returning 1.0, need to investigate.
+                col.r = filterNaN(col.r)
+                col.g = filterNaN(col.g)
+                col.b = filterNaN(col.b)
 
                 col /= Float(ns)
 
